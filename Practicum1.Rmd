@@ -1,5 +1,5 @@
 ---
-title: "S690 Practicum1"
+title: "Technical Report"
 output:
   pdf_document: default
   html_document: default
@@ -208,9 +208,9 @@ ggplot(df2, aes(x=df.BMI_change, color= gender, fill = gender)) +
     xlab("change in BMI") 
 ```
 
-
-
-
+```{r}
+testing
+```
 
 
 
