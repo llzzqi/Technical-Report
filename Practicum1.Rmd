@@ -1,0 +1,216 @@
+---
+title: "S690 Practicum1"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(readxl)
+library(dplyr)
+df <- read_excel("Practicum1.xlsx")
+```
+
+
+```{r}
+# number of missing value
+sum(is.na(df$shift))   # 44
+
+sum(is.na(df$weightgain))  # 44
+sum(is.na(df$lbs_gained))  # 160
+sum(is.na(df$pounds_gained)) # 160
+sum(is.na(df$BMI)) # 139
+sum(is.na(df$bweight)) # 124
+sum(is.na(df$height))  #61
+```
+```{r}
+# check missing values
+Z1 = df[is.na(df$BMI) == FALSE & is.na(df$shift) == FALSE & is.na(df$Total_Met_Min) == FALSE,]
+
+Z2 = df[is.na(df$lbs_gained) == FALSE & is.na(df$shift) == FALSE & is.na(df$Total_Met_Min) == FALSE,]
+
+Z3 = df[is.na(df$weightgain) == FALSE & is.na(df$shift) == FALSE & is.na(df$Total_Met_Min) == FALSE,]
+
+# Though "weightgain" has most non-missing observations, it is not as informative as BMI. For example, we would like to know by how much a subject's weight increases.
+# Or the weight gain is in a reasonable/no-harm range. 
+```
+
+
+
+```{r}
+# check values for categorical variables
+table(df$shift)  
+
+table(df$gender)
+```
+
+
+
+
+
+
+```{r}
+# compute change in BMI(kg/m^2)
+
+# compute starting weight
+df$start_weight_lbs = df$bweight - df$pounds_gained
+
+# convert lbs to kg
+df$start_weight_kg = 0.453592 * df$start_weight_lbs
+
+# convert inch to meter
+df$height_meter = 0.0254 * df$height
+
+# compute starting BMI 
+df$BMI_start = df$start_weight_kg/(df$height_meter^2)
+
+# compute change in BMI
+df$BMI_change = df$BMI - df$BMI_start
+```
+
+
+```{r}
+# imputation for Total_met_min
+df$Total_met_min_imp = 8* df$`Vig ex Time` + 4* df$`Mod ex time` + 3.3*df$`Walk ex Time`
+```
+
+
+```{r}
+# summary statistics 
+my_data = data.frame(df$BMI_start, df$BMI, df$BMI_change, df$shift, df$Total_met_min_imp, df$gender, df$Age, df$height_meter)
+
+
+summary(my_data)
+
+# standard deviation
+sd(my_data$df.BMI_start, na.rm = TRUE)
+sd(my_data$df.BMI, na.rm = TRUE)
+sd(my_data$df.BMI_change, na.rm = TRUE)
+sd(my_data$df.Total_met_min_imp, na.rm = TRUE)
+sd(my_data$df.Age, na.rm = TRUE)
+
+# number of observations
+sum(is.na(my_data$df.BMI_start)==FALSE)
+sum(is.na(my_data$df.BMI)==FALSE)
+sum(is.na(my_data$df.BMI_change)==FALSE)
+sum(is.na(my_data$df.Total_met_min_imp)==FALSE)
+sum(is.na(my_data$df.Age)==FALSE)
+```
+
+```{r}
+# summary statitics by shift
+# my_data %>%
+# 	group_by(df.shift) %>%
+# 	summarise(mean_BMI = mean(df.BMI_change, na.rm = TRUE),
+# 	          sd_BMI = sd(df.BMI_change, na.rm = TRUE),
+# 	          )
+
+
+# summary statistics by gender (mean & SD)
+my_data %>%
+	group_by(df.gender) %>%
+	summarise(mean_BMI_start = mean(df.BMI_start, na.rm = TRUE),
+	          sd_BMI_start = sd(df.BMI_start, na.rm = TRUE),
+	          
+	          mean_BMI_end = mean(df.BMI, na.rm = TRUE),
+	          sd_BMI_end = sd(df.BMI, na.rm = TRUE),
+	    
+	          mean_BMI_change = mean(df.BMI_change, na.rm = TRUE),
+	          sd_BMI_change = sd(df.BMI_change, na.rm = TRUE),
+	          
+	          mean_Met = mean(df.Total_met_min_imp, na.rm = TRUE),
+	          sd_Met = sd(df.Total_met_min_imp, na.rm = TRUE),
+	          
+	          mean_age = mean(df.Age, na.rm = TRUE),
+	          sd_age = sd(df.Age, na.rm = TRUE),
+	          )
+
+```
+
+```{r}
+# summary statistics by gender (min & max)
+my_data %>%
+	group_by(df.gender) %>%
+	summarise(min_BMI_start = min(df.BMI_start, na.rm = TRUE),
+	          max_BMI_start = max(df.BMI_start, na.rm = TRUE),
+	          
+	          min_BMI_end = min(df.BMI, na.rm = TRUE),
+	          max_BMI_end = max(df.BMI, na.rm = TRUE),
+	    
+	          min_BMI_change = min(df.BMI_change, na.rm = TRUE),
+	          max_BMI_change = max(df.BMI_change, na.rm = TRUE),
+	          
+	          min_Met = min(df.Total_met_min_imp, na.rm = TRUE),
+	          max_Met = max(df.Total_met_min_imp, na.rm = TRUE),
+	          
+	          min_age = min(df.Age, na.rm = TRUE),
+	          max_age = max(df.Age, na.rm = TRUE),
+	          )
+
+```
+
+
+```{r}
+# summary statistics by gender (count)
+nrow(subset(my_data, is.na(my_data$df.BMI_start) == FALSE & my_data$df.gender == "Female"))
+nrow(subset(my_data, is.na(my_data$df.BMI_start) == FALSE & my_data$df.gender == "Male"))
+
+
+
+nrow(subset(my_data, is.na(my_data$df.BMI) == FALSE & my_data$df.gender == "Female"))
+nrow(subset(my_data, is.na(my_data$df.BMI) == FALSE & my_data$df.gender == "Male"))
+
+
+
+nrow(subset(my_data, is.na(my_data$df.BMI_change) == FALSE & my_data$df.gender == "Female"))
+nrow(subset(my_data, is.na(my_data$df.BMI_change) == FALSE & my_data$df.gender == "Male"))
+
+
+
+nrow(subset(my_data, is.na(my_data$df.Total_met_min_imp) == FALSE & my_data$df.gender == "Female"))
+nrow(subset(my_data, is.na(my_data$df.Total_met_min_imp) == FALSE & my_data$df.gender == "Male"))
+
+
+nrow(subset(my_data, is.na(my_data$df.Age) == FALSE & my_data$df.gender == "Female"))
+nrow(subset(my_data, is.na(my_data$df.Age) == FALSE & my_data$df.gender == "Male"))
+```
+
+
+```{r}
+# boxplot by shift
+library(ggplot2)
+library(tidyverse)
+df1 = my_data[is.na(my_data$df.shift)==FALSE,]
+ggplot(df1, aes(x=df.shift, y=df.BMI_change)) + 
+    geom_boxplot() +
+    xlab("shift") +
+    ylab("change in BMI")
+```
+
+
+```{r}
+df2 = my_data[is.na(my_data$df.gender)==FALSE,]
+names(df2)[6] <- "gender"
+
+mu = df2 %>%
+	group_by(gender) %>%
+	summarise(mean = mean(df.BMI_change, na.rm = TRUE))
+
+ggplot(df2, aes(x=df.BMI_change, color= gender, fill = gender)) +
+  geom_histogram( alpha=0.5, position="identity", bins = 50) + 
+    geom_vline(data=mu, aes(xintercept=mean, color=gender),
+             linetype="dashed")+
+    xlab("change in BMI") 
+```
+
+
+
+
+
+
+
