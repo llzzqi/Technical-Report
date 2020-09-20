@@ -14,7 +14,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(readxl)
 library(dplyr)
+library(ggplot2)
 df <- read_excel("Practicum 1.xlsx")
+
 ```
 
 ```{r}
@@ -65,6 +67,22 @@ sum(is.na(data_complete_cases$Age))
 sum(is.na(data_complete_cases$Total_met_min_imp))
 sum(is.na(data_complete_cases$BMI_change))
 ```
+
+
+### Exploratory data analysis
+```{r}
+ggplot(data_complete_cases,aes(y = log(BMI_change), x = log(Total_met_min_imp), color = gender) )+
+geom_point() + geom_smooth(method = "lm", fill = NA) + 
+  xlab("log(Total Metabolic Minutes)") + 
+  ylab("log(Change in BMI)") +
+
+```
+
+
+
+
+
+
 
 
 
@@ -120,7 +138,7 @@ summary(m2)
 anova(m1, m2)
 ```
 
-The results suggest that the effects of total metabolic minutes on BMI change are not significantly different for male and female workers. The results from the F-test also confirms that including the intersection term between total matebolic minutes and gender does not significantly improve the model. 
+The results suggest that the effects of total metabolic minutes on BMI change are not significantly different for male and female workers. The results from the F-test also confirms that including the intersection term between total matebolic minutes and gender does not significantly improve the model (p-value = 0.12). 
 
 
 
