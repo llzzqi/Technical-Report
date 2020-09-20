@@ -1,0 +1,65 @@
+---
+title: "data cleanning"
+author: "Chen Zhou"
+date: "9/19/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+df <- read_excel("Practicum 1.xlsx")
+```
+
+```{r}
+table(is.na(df))
+```
+
+```{r}
+# compute change in BMI(kg/m^2)
+
+# compute starting weight
+df$start_weight_lbs = df$bweight - df$pounds_gained
+
+# convert lbs to kg
+df$start_weight_kg = 0.453592 * df$start_weight_lbs
+
+# convert inch to meter
+df$height_meter = 0.0254 * df$height
+
+# compute starting BMI 
+df$BMI_start = df$start_weight_kg/(df$height_meter^2)
+
+# compute change in BMI
+df$BMI_change = df$BMI - df$BMI_start
+```
+
+```{r}
+# imputation for Total_met_min
+df$Total_met_min_imp = 8* df$`Vig ex Time` + 4* df$`Mod ex time` + 3.3*df$`Walk ex Time`
+```
+
+```{r}
+sum(is.na(df$Age))
+sum(is.na(df$Total_met_min_imp))
+sum(is.na(df$BMI_change))
+```
+
+```{r}
+library(arsenal)
+newdf <- df[c("gender", "Age", "shift", "Total_met_min_imp", "BMI_change")]
+summary(newdf, title="old")
+data_complete_cases <- newdf[complete.cases(newdf), ]
+summary(data_complete_cases)
+head(data_complete_cases)
+```
+
+```{r}
+sum(is.na(data_complete_cases$Age))
+sum(is.na(data_complete_cases$Total_met_min_imp))
+sum(is.na(data_complete_cases$BMI_change))
+```
