@@ -9,6 +9,8 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
 ```{r}
 library(readxl)
 library(dplyr)
@@ -63,3 +65,69 @@ sum(is.na(data_complete_cases$Age))
 sum(is.na(data_complete_cases$Total_met_min_imp))
 sum(is.na(data_complete_cases$BMI_change))
 ```
+
+
+
+### Statistical Modelling
+
+### Baseline model
+To examine the effects of shift and total metabolic minutes on the empolyees' weight gain, we first include a multiple linear regression model into our analysis. Based on our findings in the exploratory data analysis, we decided to use logrithm transformation for both the response variable "BMI change" and the explanatory variable "Total metabolic minutes" to fit the linear relationship. If the variable "Total metabolic minutes" has a value of zero, a small constant 0.01 will be added to the value in order to perform the log transformation. Other predictors included in the baseline model are: shift, age, and gender. The specific model we use is as follows: 
+
+
+```{r}
+data_complete_cases$ttm = data_complete_cases$Total_met_min_imp + 0.01
+m1 = lm(log(BMI_change) ~ log(ttm) + shift + Age + gender, data = data_complete_cases)
+summary(m1)
+
+# RSS
+sum(residuals(m1)^2)
+```
+
+
+
+Based on a significance level of 0.05 ($\alpha = 0.05$), the estimation results show that the total metabolic minutes has no statistically significant effect on the increase of BMI. The shift time also do not have significant effects on the change in BMI, except for the shift at 8 am. Specifically, for the employees whose shift were at 8 am, their average increase in the BMI is 1.36 higher than the empoyees at other shift time ($\exp(0.31) \approx 1.36$). The model has a residual sum of squares (RSS) of 67.6, with a R-squared of 0.13, suggesting that about 13\% of the variation in the BMI change can be explained by the model.  
+
+
+
+### T-test 
+T-test to see if there is any significant difference between male and female
+```{r}
+t.test(BMI_change ~ gender, data = data_complete_cases )
+t.test(Total_met_min_imp ~ gender, data = data_complete_cases )
+```
+
+```{r}
+# export regerssion output to latex
+# install.packages("texreg")
+# library(texreg)
+# texreg(list(m1,m2))
+```
+
+
+### model with interaction terms
+In the exploratory data analysis, we observe that the effect of total metabolic minutes on BMI change appears to be different for male and female workers (Figure xxx). In this subsection, we include the interaction term between total metabolic minutes and gender to our baseline model to examine whether the difference is statistically significant. 
+
+```{r}
+data_complete_cases$ttm = data_complete_cases$Total_met_min_imp + 0.1
+m2 = lm(log(BMI_change) ~ log(ttm)*gender + shift + Age, data = data_complete_cases)
+summary(m2)
+```
+
+
+
+```{r}
+# F-test
+anova(m1, m2)
+```
+
+The results suggest that the effects of total metabolic minutes on BMI change are not significantly different for male and female workers. The results from the F-test also confirms that including the intersection term between total matebolic minutes and gender does not significantly improve the model. 
+
+
+
+
+
+
+
+
+
+
