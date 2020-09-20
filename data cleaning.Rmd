@@ -74,7 +74,7 @@ sum(is.na(data_complete_cases$BMI_change))
 ggplot(data_complete_cases,aes(y = log(BMI_change), x = log(Total_met_min_imp), color = gender) )+
 geom_point() + geom_smooth(method = "lm", fill = NA) + 
   xlab("log(Total Metabolic Minutes)") + 
-  ylab("log(Change in BMI)") +
+  ylab("log(Change in BMI)") 
 
 ```
 
