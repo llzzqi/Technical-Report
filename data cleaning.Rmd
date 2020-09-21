@@ -79,6 +79,31 @@ geom_point() + geom_smooth(method = "lm", fill = NA) +
 ```
 
 
+#The relationship between BMI change and shift
+
+```{r}
+ggplot(data_complete_cases, aes(x=shift, y=BMI_change)) + 
+    geom_boxplot() + xlab("shift") + ylab("change in BMI") + ggtitle("The relationship between BMI change and shift") + scale_x_discrete(limits = c("7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "other"))
+```
+
+
+#The relationship between BMI change and metabolic
+
+```{r}
+ggplot(data_complete_cases, aes(x=log(Total_met_min_imp), y=log(BMI_change))) +geom_point()+ xlab("log(Total metabolic minutes)") + geom_smooth(method = "lm", se = FALSE)+ ylab("log(Change in BMI)") + ggtitle("The relationship between BMI Change and Total Metabolic Minutes")
+```
+
+#The relationship between BMI change and gender
+```{r}
+ggplot(data_complete_cases, aes(x=gender, y=BMI_change)) + 
+    geom_boxplot(outlier.shape = NA) + xlab("gender") + ylab("change in BMI") + ggtitle("The relationship between BMI change and gender") 
+```
+
+#The relationship between BMI change and metabolic by Gender
+
+```{r}
+ggplot(data_complete_cases, aes(x=log(Total_met_min_imp), y=log(BMI_change)), group = gender, color = gender) +geom_point()+ xlab("log(Total metabolic minutes)") + geom_smooth(method = "lm", se = FALSE)+ ylab("log(Change in BMI)") + ggtitle("The relationship between BMI Change and Total Metabolic Minutes by Gender")
+```
 
 
 
@@ -141,11 +166,15 @@ anova(m1, m2)
 The results suggest that the effects of total metabolic minutes on BMI change are not significantly different for male and female workers. The results from the F-test also confirms that including the intersection term between total matebolic minutes and gender does not significantly improve the model (p-value = 0.12). 
 
 
+### Normal qq-plot for model1 and model2
+```{r}
+plot(m1)
+plot(m2)
+```
 
-
-
-
-
-
-
-
+## residual plot
+```{r}
+m1_residual <- resid(m1)
+m1_fitted <- fitted(m1)
+plot(m1_fitted,m1_residual, xlab = "fitted values", ylab = "residuals", main = "residual plot for model 1")
+```
