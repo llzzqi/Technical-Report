@@ -166,15 +166,40 @@ anova(m1, m2)
 The results suggest that the effects of total metabolic minutes on BMI change are not significantly different for male and female workers. The results from the F-test also confirms that including the intersection term between total matebolic minutes and gender does not significantly improve the model (p-value = 0.12). 
 
 
-### Normal qq-plot for model1 and model2
+
+### Model diagnosis
+### Use qqplot to check for normality
 ```{r}
-plot(m1)
-plot(m2)
+plot(m1, 2)
 ```
 
-## residual plot
+The qqplot is very close to a straight line, indicating the normality assumption has been satisfied. 
+
+
+
+## use the residual plot to check for homosckedasticity
 ```{r}
-m1_residual <- resid(m1)
-m1_fitted <- fitted(m1)
-plot(m1_fitted,m1_residual, xlab = "fitted values", ylab = "residuals", main = "residual plot for model 1")
+# m1_residual <- resid(m1)
+# m1_fitted <- fitted(m1)
+# plot(m1_fitted,m1_residual, xlab = "fitted values", ylab = "residuals", main = "residual plot for model 1")
+
+
+plot(m1,1)
 ```
+
+The residual plot shows a slight tendency of increasing vriance with the fitted values, suggesting the homesckedascity assumption of our linear model might be violated. To address this issue, we use the robust sandwich variance estimator for our model 1. Table xxx compares the original standard errors with the sandwich standard errors. 
+
+
+```{r}
+library(alr4)
+#hccm(m1, type="hc3")
+
+cbind("Original SE"=sqrt(diag(vcov(m1))), "Sandwich SE"=sqrt(diag(hccm(m1, type="hc3"))))
+```
+
+The sandwich estimation does not change the standard errors much, and our main findings still holds. That is, the total metabolic minutes do not have significant effects on the increase in BMI over the 8 month study period. In addition, only the shift at 8 am is associated with the increase in BMI. 
+
+
+
+
+
