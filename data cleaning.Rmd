@@ -70,13 +70,14 @@ sum(is.na(data_complete_cases$BMI_change))
 
 
 ### Exploratory data analysis
+
 ```{r}
 ggplot(data_complete_cases,aes(y = log(BMI_change), x = log(Total_met_min_imp), color = gender) )+
 geom_point() + geom_smooth(method = "lm", fill = NA) + 
   xlab("log(Total Metabolic Minutes)") + 
-  ylab("log(Change in BMI)") 
-
+  ylab("log(Change in BMI)") + ggtitle("The relationship between BMI change and Total metabolic minutes by gender")
 ```
+Based on the scatterplot of the relationship between Total Metabolic Minutes and BMI change by gender, we log both the Total Metabolic Minutes and Change in BMI. The result shows that female has a smaller slope than male which means male's metabolic minutes change might have a bigger impact on the BMI change.
 
 
 #The relationship between BMI change and shift
@@ -85,6 +86,8 @@ geom_point() + geom_smooth(method = "lm", fill = NA) +
 ggplot(data_complete_cases, aes(x=shift, y=BMI_change)) + 
     geom_boxplot() + xlab("shift") + ylab("change in BMI") + ggtitle("The relationship between BMI change and shift") + scale_x_discrete(limits = c("7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "other"))
 ```
+According to the boxplot of the relationship between BMI change and shift, BMI change in 7am, 8am and 2pm are sighter higher than in other times and it has the lowest distribution of median from 11am to 1pm. This suggests that shift is an influence factor of BMI change.
+
 
 
 #The relationship between BMI change and metabolic
@@ -92,21 +95,16 @@ ggplot(data_complete_cases, aes(x=shift, y=BMI_change)) +
 ```{r}
 ggplot(data_complete_cases, aes(x=log(Total_met_min_imp), y=log(BMI_change))) +geom_point()+ xlab("log(Total metabolic minutes)") + geom_smooth(method = "lm", se = FALSE)+ ylab("log(Change in BMI)") + ggtitle("The relationship between BMI Change and Total Metabolic Minutes")
 ```
+According to the scatterplot of the relationship between BMI change and Total metabolic minutes after log both of the variables, it shows a tendency of homoskedasticity starting from Total metabolic minutes 5. There are fewer points distributed in Total metabolic minutes less than 5 so it does not have much effects on the relationship. Overall it shows a constant variance.
+
+
 
 #The relationship between BMI change and gender
 ```{r}
 ggplot(data_complete_cases, aes(x=gender, y=BMI_change)) + 
     geom_boxplot(outlier.shape = NA) + xlab("gender") + ylab("change in BMI") + ggtitle("The relationship between BMI change and gender") 
 ```
-
-#The relationship between BMI change and metabolic by Gender
-
-```{r}
-ggplot(data_complete_cases, aes(x=log(Total_met_min_imp), y=log(BMI_change)), group = gender, color = gender) +geom_point()+ xlab("log(Total metabolic minutes)") + geom_smooth(method = "lm", se = FALSE)+ ylab("log(Change in BMI)") + ggtitle("The relationship between BMI Change and Total Metabolic Minutes by Gender")
-```
-
-
-
+According to the outpit of the boxplot, it suggests that BMI change are not significantly different for male and female. Female has a similar median value as male, so gender might not have much effect on the change in BMI.
 
 
 
